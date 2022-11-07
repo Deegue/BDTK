@@ -45,12 +45,20 @@ class LLVMJITFunction final : public JITFunction {
 
   JITValuePointer getArgument(size_t index) override;
 
+  IfBuilderPointer createIfBuilder() override;
+
+  LoopBuilderPointer createLoopBuilder() override;
+
   void createReturn() override;
 
   void createReturn(JITValue& value) override;
 
   JITValuePointer emitJITFunctionCall(
       JITFunction& function,
+      const JITFunctionEmitDescriptor& descriptor) override;
+
+  JITValuePointer emitRuntimeFunctionCall(
+      const std::string& fname,
       const JITFunctionEmitDescriptor& descriptor) override;
 
   void finish() override;
@@ -60,6 +68,8 @@ class LLVMJITFunction final : public JITFunction {
 
  private:
   void* getFunctionPointer() override;
+
+  void cloneFunctionRecursive(llvm::Function* fn);
 
   LLVMJITModule& module_;
   llvm::Function& func_;
